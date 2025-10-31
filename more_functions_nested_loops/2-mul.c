@@ -1,6 +1,6 @@
 #include "main.h"
 /**
- * mul -  is x2 for the ints
+ * mul - Multiplies two integers
  * @a: is the first int
  * @b: is the second int
  *
