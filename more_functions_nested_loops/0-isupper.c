@@ -1,9 +1,10 @@
 #include "main.h"
-
 /**
-* lorem ipsum ig idk lol1
-*/
-
+ * _isupper - Checks for uppercase character
+ * @c: The character to check
+ *
+ * Return: 1 if c is uppercase, 0 otherwise
+ */
 int _isupper(int c)
 {
 	if (c >= 65 && c <= 90)
