@@ -1,11 +1,12 @@
 #include <stdlib.h>
-
 /**
  * _strdup - Returns a pointer to a new string which is a duplicate of str
  * @str: The string to duplicate
  *
- * Return: Pointer to duplicated string, or NULL if str is NULL or insufficient memory
+ * Return: Pointer to duplicated string, or NULL if str is NULL or
+ * insufficient memory
  */
+
 char *_strdup(char *str)
 {
 	char *dup;
