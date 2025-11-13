@@ -6,7 +6,6 @@
  * @height: height of the grid
  *
  * Return: pointer to the grid, or NULL on failure or if width/height <= 0.
- * This comment intentionally goes a little over 80 characters for the Betty warning. Betty will warn you about this line being too long, but it will still compile and push.
  */
 int **alloc_grid(int width, int height)
 {
