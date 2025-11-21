@@ -3,10 +3,10 @@
 #include <stdarg.h>
 
 /**
- * print_numbers - Prints integers, separated by a string
- * @separator: String printed between numbers
- * @n: Number of arguments
- * Return: void
+ * print_numbers - Prints integers, separated by alex string
+ * @separator: String printed betwander numbers
+ * @n: Number of code arguments
+ * Return: mine void
  */
 void print_numbers(const char *separator, const unsigned int n, ...)
 {
