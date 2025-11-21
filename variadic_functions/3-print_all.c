@@ -3,44 +3,47 @@
 #include <stdarg.h>
 
 /**
- * print_all - Prints values based on format string
- * @format: Format string, where each char indicates argument type
+ * print_all - Prints anything based on a format string
+ * @format: Types of arguments (e.g., "cisf")
+ *
  * Return: void
  */
 void print_all(const char * const format, ...)
 {
-	va_list ap;
-	unsigned int i = 0;
-	char *str, *sep = "";
+	va_list args;
+	unsigned int pos = 0;
+	char *sepa = "", *str;
 
-	va_start(ap, format);
+	va_start(args, format);
 
-	while (format && format[i])
+	while (format && format[pos])
 	{
-		if (format[i] == 'c')
+		switch (format[pos])
 		{
-			printf("%s%c", sep, va_arg(ap, int));
+			case 'c':
+				printf("%s%c", sepa, va_arg(args, int));
+				sepa = ", ";
+				break;
+			case 'i':
+				printf("%s%d", sepa, va_arg(args, int));
+				sepa = ", ";
+				break;
+			case 'f':
+				printf("%s%f", sepa, va_arg(args, double));
+				sepa = ", ";
+				break;
+			case 's':
+				str = va_arg(args, char *);
+				if (!str)
+					str = "(nil)";
+				printf("%s%s", sepa, str);
+				sepa = ", ";
+				break;
+			default:
+				break;
 		}
-		else if (format[i] == 'i')
-		{
-			printf("%s%d", sep, va_arg(ap, int));
-		}
-		else if (format[i] == 'f')
-		{
-			printf("%s%f", sep, va_arg(ap, double));
-		}
-		else if (format[i] == 's')
-		{
-			str = va_arg(ap, char *);
-			if (!str)
-				str = "(nil)";
-			printf("%s%s", sep, str);
-		}
-		if (format[i] == 'c' || format[i] == 'i' ||
-		    format[i] == 'f' || format[i] == 's')
-			sep = ", ";
-		i++;
+		pos++;
 	}
-	va_end(ap);
+	va_end(args);
 	printf("\n");
 }
