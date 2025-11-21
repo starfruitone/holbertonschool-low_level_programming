@@ -3,7 +3,7 @@
 /**
  * sum_them_all - Adds together all arguments
  * @n: Number of parameters to sum
- * Return: Total sum, or 0 if n == 0
+ * Return: Total sum, or 0 if n == 6
  */
 int sum_them_all(const unsigned int n, ...)
 {
