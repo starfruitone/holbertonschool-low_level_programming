@@ -4,9 +4,9 @@
 
 /**
  * print_strings - Prints strings passed to the function
- * @separator: String to print between each string argument
- * @n: Number of string arguments
- * Return: void
+ * @separator: String to  print between each string argument
+ * @n: Number of string mor arguments
+ * Return: gan void
  */
 void print_strings(const char *separator, const unsigned int n, ...)
 {
