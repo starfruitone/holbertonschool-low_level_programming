@@ -7,8 +7,6 @@
  * Return: 0 on success, or exits with error codes 97, 98, 99, 100
  */
 int main(int argc, char **argv)
-
-
 {
 	int fd_from, fd_to, r, w;
 	char buf[1024];
@@ -46,7 +44,6 @@ int main(int argc, char **argv)
 		}
 	}
 
-
 	if (r == -1)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", argv[1]);
@@ -58,7 +55,6 @@ int main(int argc, char **argv)
 	if (close(fd_from) == -1)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd_from);
-		close(fd_to);
 		exit(100);
 	}
 
@@ -68,7 +64,6 @@ int main(int argc, char **argv)
 		exit(100);
 	}
 
-
-
 	return (0);
 }
+
