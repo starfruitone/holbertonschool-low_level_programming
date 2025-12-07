@@ -1,6 +1,12 @@
 #include "main.h"
 
-static void handle_err(int code, const char *file, int fd)
+/**
+ * fail - prints an error message and exits with a given code
+ * @code: exit status
+ * @file: filename for read/write errors (can be NULL)
+ * @fd: file descriptor for close error (or 0 when unused)
+ */
+static void fail(int code, char *file, int fd)
 {
 	if (code == 97)
 	{
@@ -21,51 +27,55 @@ static void handle_err(int code, const char *file, int fd)
 	exit(code);
 }
 
+/**
+ * main - copies the content of a file to another file
+ * @argc: number of arguments
+ * @argv: array of argument strings
+ *
+ * Return: 0 on success, or exit with 97, 98, 99, 100 on error
+ */
 int main(int argc, char **argv)
 {
-	int src_fd, dst_fd, status;
-	ssize_t n_read, n_written;
-	char buffer[1024];
+	int fd_from = 0, fd_to = 0, close_status = 0;
+	ssize_t bytes_read = 1, bytes_written = 0;
+	char *file_from = NULL, *file_to = NULL;
+	char buff[1024];
 
 	if (argc != 3)
-		handle_err(97, NULL, -1);
+		fail(97, NULL, 0);
 
-	src_fd = open(argv[1], O_RDONLY);
-	if (src_fd == -1)
-		handle_err(98, argv[1], -1);
+	file_from = argv[1];
+	file_to = argv[2];
 
-	dst_fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0664);
-	if (dst_fd == -1)
+	fd_from = open(file_from, O_RDONLY);
+	if (fd_from == -1)
+		fail(98, file_from, 0);
+
+	fd_to = open(file_to, O_CREAT | O_WRONLY | O_TRUNC, 0664);
+	if (fd_to == -1)
 	{
-		close(src_fd);
-		handle_err(99, argv[2], -1);
+		close(fd_from);
+		fail(99, file_to, 0);
 	}
 
-	while ((n_read = read(src_fd, buffer, 1024)) > 0)
+	while (bytes_read)
 	{
-		n_written = write(dst_fd, buffer, n_read);
-		if (n_written == -1 || n_written != n_read)
-		{
-			close(src_fd);
-			close(dst_fd);
-			handle_err(99, argv[2], -1);
-		}
+		bytes_read = read(fd_from, buff, 1024);
+		if (bytes_read == -1)
+			fail(98, file_from, 0);
+
+		bytes_written = write(fd_to, buff, bytes_read);
+		if (bytes_written == -1)
+			fail(99, file_to, 0);
 	}
 
-	if (n_read == -1)
-	{
-		close(src_fd);
-		close(dst_fd);
-		handle_err(98, argv[1], -1);
-	}
+	close_status = close(fd_from);
+	if (close_status == -1)
+		fail(100, NULL, fd_from);
 
-	status = close(src_fd);
-	if (status == -1)
-		handle_err(100, NULL, src_fd);
-
-	status = close(dst_fd);
-	if (status == -1)
-		handle_err(100, NULL, dst_fd);
+	close_status = close(fd_to);
+	if (close_status == -1)
+		fail(100, NULL, fd_to);
 
 	return (0);
 }
