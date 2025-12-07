@@ -11,6 +11,8 @@
  * @value: value string
  * @next: next node in the list
  */
+
+
 typedef struct hash_node_s
 {
 	char *key;
@@ -30,5 +32,6 @@ typedef struct hash_table_s
 } hash_table_t;
 
 hash_table_t *hash_table_create(unsigned long int size);
+unsigned long int hash_djb2(const unsigned char *str);
 
 #endif /* HASH_TABLES_H */
