@@ -6,71 +6,66 @@
  * @argv: array of arguments
  * Return: 0 on success, or exits with error codes 97, 98, 99, 100
  */
-static char *alloc_buf(char *dest)
+static void handle_error(int code, char *file, int fd)
 {
-	char *buf = malloc(1024);
-
-	if (buf == NULL)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", dest);
-		exit(99);
-	}
-	return (buf);
-}
-
-static void shut_fd(int fd)
-{
-	if (close(fd) == -1)
-	{
-		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
-		exit(100);
-	}
-}
-
-int main(int argc, char *argv[])
-{
-	int fd_from, fd_to;
-	ssize_t r, w;
-	char *buf;
-
-	if (argc != 3)
+	if (code == 97)
 	{
 		dprintf(STDERR_FILENO, "Usage: cp file_from file_to\n");
-		exit(97);
 	}
+	else if (code == 98)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't read from file %s\n", file);
+	}
+	else if (code == 99)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't write to %s\n", file);
+	}
+	else if (code == 100)
+	{
+		dprintf(STDERR_FILENO, "Error: Can't close fd %d\n", fd);
+	}
+	exit(code);
+}
 
-	buf = alloc_buf(argv[2]);
+int main(int argc, char **argv)
+{
+	int fd_from, fd_to, c_status;
+	ssize_t bytes_read, bytes_written;
+	char buf[1024];
+
+	if (argc != 3)
+		handle_error(97, NULL, 0);
 
 	fd_from = open(argv[1], O_RDONLY);
-	r = read(fd_from, buf, 1024);
+	if (fd_from == -1)
+		handle_error(98, argv[1], 0);
+
 	fd_to = open(argv[2], O_CREAT | O_WRONLY | O_TRUNC, 0664);
+	if (fd_to == -1)
+	{
+		close(fd_from);
+		handle_error(99, argv[2], 0);
+	}
 
-	do {
-		if (fd_from == -1 || r == -1)
-		{
-			dprintf(STDERR_FILENO,
-				"Error: Can't read from file %s\n", argv[1]);
-			free(buf);
-			exit(98);
-		}
+	bytes_read = 1;
+	while (bytes_read > 0)
+	{
+		bytes_read = read(fd_from, buf, 1024);
+		if (bytes_read == -1)
+			handle_error(98, argv[1], 0);
 
-		w = write(fd_to, buf, r);
-		if (fd_to == -1 || w == -1)
-		{
-			dprintf(STDERR_FILENO,
-				"Error: Can't write to %s\n", argv[2]);
-			free(buf);
-			exit(99);
-		}
+		bytes_written = write(fd_to, buf, bytes_read);
+		if (bytes_written == -1)
+			handle_error(99, argv[2], 0);
+	}
 
-		r = read(fd_from, buf, 1024);
-		fd_to = open(argv[2], O_WRONLY | O_APPEND);
+	c_status = close(fd_from);
+	if (c_status == -1)
+		handle_error(100, NULL, fd_from);
 
-	} while (r > 0);
-
-	free(buf);
-	shut_fd(fd_from);
-	shut_fd(fd_to);
+	c_status = close(fd_to);
+	if (c_status == -1)
+		handle_error(100, NULL, fd_to);
 
 	return (0);
 }
