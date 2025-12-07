@@ -37,7 +37,7 @@ static void fail(int code, char *file, int fd)
 int main(int argc, char **argv)
 {
 	int fd_from, fd_to, close_status;
-	ssize_t bytes_read = 1, bytes_written;
+	ssize_t bytes_read, bytes_written;
 	char buff[1024];
 
 	if (argc != 3)
@@ -54,16 +54,18 @@ int main(int argc, char **argv)
 		fail(99, argv[2], 0);
 	}
 
-	while (bytes_read)
+	while ((bytes_read = read(fd_from, buff, 1024)) > 0)
 	{
-		bytes_read = read(fd_from, buff, 1024);
 		if (bytes_read == -1)
 			fail(98, argv[1], 0);
 
 		bytes_written = write(fd_to, buff, bytes_read);
-		if (bytes_written == -1)
+		if (bytes_written == -1 || bytes_written != bytes_read)
 			fail(99, argv[2], 0);
 	}
+
+	if (bytes_read == -1)
+		fail(98, argv[1], 0);
 
 	close_status = close(fd_from);
 	if (close_status == -1)
@@ -75,4 +77,3 @@ int main(int argc, char **argv)
 
 	return (0);
 }
-
